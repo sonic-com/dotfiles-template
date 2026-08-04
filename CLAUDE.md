@@ -48,13 +48,35 @@ If it is ever made public, switching is a one-line comment toggle in `.chezmoiex
 `type = "archive"` alternative fetches the same content over HTTPS. The landing path is identical,
 so the symlink and ssh config don't change.
 
+## Secrets
+
+**Never commit secrets** (passwords, tokens, API keys, private keys) here — this is a git repo,
+and once pushed a secret is leaked. The `gitleaks` pre-commit hook is left **on** to catch
+accidents (`pre-commit install` to activate it locally), but don't rely on it. Handle secrets one
+of these chezmoi-supported ways instead:
+
+- **Encrypt in the repo (age or GnuPG).** Configure your recipient/key
+  ([chezmoi encryption](https://www.chezmoi.io/user-guide/encryption/)), then
+  `chezmoi add --encrypt ~/.some-secret`. The source is stored as `encrypted_…` ciphertext and
+  decrypted only on `chezmoi apply`.
+- **Fetch from a secret manager at apply time.** Reference the secret inline in a `*.tmpl` file
+  rather than storing it — e.g. HashiCorp Vault (`{{ (vault "path").data.data.value }}`),
+  1Password (`onepasswordRead`), or `pass`. The secret lives in the manager, never in git.
+- **Keep it out of chezmoi** — list it in `.chezmoiignore` and manage it by hand.
+
+At Sonic, use the vault-path conventions in the internal wiki (personal-only secrets under
+`secret/vaultPass/<user>/...`, or 1Password).
+
+## Git defaults
+
+`dot_config/git/config` sets `init.defaultBranch = main` and
+`init.templateDir = ~/.config/git/template`. That template dir ships a `hooks/pre-commit` shim, so
+**new** repos you `git init` / `git clone` get pre-commit auto-installed — it no-ops until a repo
+has a `.pre-commit-config.yaml`. Combined with the always-on `gitleaks` hook, secret scanning is
+on by default across the repos you create.
+
 ## Staying in sync with upstream
 
 `.github/workflows/upstream-sync.yml` fast-forwards your fork's `main` from upstream on a schedule
-(and on demand via "Run workflow"). To use it in your fork:
-
-1. **Settings → Actions → General → allow Actions** (forks disable them by default).
-2. Only if you want workflow-file changes to sync too: add a repo secret `UPSTREAM_SYNC_TOKEN` = a
-   PAT with `workflow` scope (the default `GITHUB_TOKEN` can't push under `.github/workflows/`).
-
-The workflow no-ops in the upstream repo itself (`if: github.repository != 'sonic-com/dotfiles-template'`).
+(and on demand via "Run workflow"), and no-ops in the upstream repo itself. **Per-fork setup steps
+are in the [README](README.md#set-up-your-fork-one-time).**

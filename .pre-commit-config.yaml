@@ -1,15 +1,22 @@
 ---
-# Pre-commit hooks are DISABLED by default in this template.
+# Most pre-commit hooks are DISABLED by default in this template: they fight
+# chezmoi's autoCommit/autoPush flow (every `chezmoi apply` that changes source
+# state would trigger them) and need a toolchain on every clone. Enable the ones
+# you want by uncommenting below, then run `pre-commit install`.
 #
-# Why: active hooks fight chezmoi's normal autoCommit/autoPush workflow (every
-# `chezmoi apply` that changes source state would trigger them) and require
-# `pre-commit install` plus the underlying tools (shellcheck, node, ...) on every
-# clone. So they ship OFF. Enable the ones you want by uncommenting below, then
-# run `pre-commit install`.
+# The ONE exception is secret scanning (gitleaks), left ON deliberately: blocking
+# secrets from being committed is something we want to be hard to do by accident.
 
-repos: []
+repos:
+  # Block secrets (API keys, tokens, private keys, ...) from being committed.
+  # Deliberately active — do not comment this out. Bump with `pre-commit autoupdate`.
+  - repo: https://github.com/gitleaks/gitleaks
+    rev: v8.30.1
+    hooks:
+      - id: gitleaks
 
-# repos:
+# --- Optional hooks, off by default. Uncomment what you want. ---
+#
 #   - repo: https://github.com/pre-commit/pre-commit-hooks
 #     rev: v6.0.0
 #     hooks:

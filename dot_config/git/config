@@ -1,0 +1,9 @@
+# Git config (XDG: ~/.config/git/config). Add your own [user] name/email etc.
+# here (or in ~/.gitconfig). chezmoi does not apply this over an existing
+# ~/.gitconfig — git reads both.
+[init]
+	defaultBranch = main
+	# New repos (git init / git clone) get the contents of this template dir
+	# copied into their .git/, so the pre-commit hook below is installed
+	# automatically. The hook no-ops unless the repo has a .pre-commit-config.yaml.
+	templateDir = ~/.config/git/template

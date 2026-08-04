@@ -16,8 +16,24 @@ have nowhere to keep your own changes.
 chezmoi init --apply https://github.com/<you>/dotfiles.git
 ```
 
-Preview with `chezmoi diff`, apply with `chezmoi apply`. Your fork can auto-track upstream — see
-[Staying in sync](CLAUDE.md#staying-in-sync-with-upstream).
+Preview with `chezmoi diff`, apply with `chezmoi apply`. Then do the one-time
+[fork setup](#set-up-your-fork-one-time) below to turn on auto-sync and secret scanning.
+
+## Set up your fork (one-time)
+
+After forking and `chezmoi apply`, a couple of things need enabling on your fork's GitHub repo and
+in your chezmoi source:
+
+1. **Enable Actions (for auto-sync).** On your fork: **Settings → Actions → General → Allow all
+   actions** — forks ship with Actions disabled. The `Upstream Sync` workflow then fast-forwards
+   your `main` from `sonic-com/dotfiles-template` daily (and on demand via **Actions → Upstream
+   Sync → Run workflow**).
+2. **(Optional) Sync workflow-file changes too.** The default `GITHUB_TOKEN` can't push under
+   `.github/workflows/`. If you want updates to the workflow itself to sync, add a repo **secret**
+   `UPSTREAM_SYNC_TOKEN` = a personal access token with `workflow` scope (**Settings → Secrets and
+   variables → Actions**).
+3. **Turn on secret scanning locally.** In your chezmoi source (`chezmoi cd`), run
+   `pre-commit install`. The always-on `gitleaks` hook then blocks commits containing secrets.
 
 ## What you get
 
@@ -28,10 +44,13 @@ Preview with `chezmoi diff`, apply with `chezmoi apply`. Your fork can auto-trac
   [`dotfiles-ssh`](https://github.com/sonic-com/dotfiles-ssh) repo (e.g. agent-forwarding to
   build and monitoring hosts) is `Include`d automatically.
 - **Auto-sync** — a GitHub Action fast-forwards your fork from upstream on a schedule.
+- **Safer commits** — an always-on `gitleaks` pre-commit hook blocks secrets, and new git repos
+  you create inherit a pre-commit setup automatically (via `~/.config/git/template`).
 
 ## More
 
 - [SSH config layout & the host CA](CLAUDE.md#ssh)
 - [Public vs private dotfiles-ssh](CLAUDE.md#private-vs-public-dotfiles-ssh)
-- [Staying in sync with upstream](CLAUDE.md#staying-in-sync-with-upstream)
+- [Handling secrets](CLAUDE.md#secrets) and [git defaults](CLAUDE.md#git-defaults)
+- [How upstream sync works](CLAUDE.md#staying-in-sync-with-upstream)
 - [chezmoi conventions](CLAUDE.md#chezmoi-conventions)

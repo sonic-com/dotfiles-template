@@ -1,5 +1,66 @@
+# --- project-local editor / backup cruft ---
 .#*
 *~
 *.bak
 *.old
 DEADJOE
+
+# --- github/gitignore Global/Linux.gitignore ---
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+nohup.out
+
+# --- github/gitignore Global/macOS.gitignore ---
+.DS_Store
+.localized
+__MACOSX/
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.com.apple.timemachine.supported
+.PKInstallSandboxManager
+.PKInstallSandboxManager-SystemSoftware
+.hotfiles.btree
+.vol
+.file
+.disk_label*
+lost+found
+.HFS+ Private Directory Data
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# --- github/gitignore Global/Vim.gitignore ---
+[._]*.s[a-v][a-z]
+!*.svg
+[._]*.sw[a-p]
+[._]s[a-rt-v][a-z]
+[._]ss[a-gi-z]
+[._]sw[a-p]
+Session.vim
+Sessionx.vim
+.netrwhist
+tags
+[._]*.un~
+
+# --- github/gitignore Global/VisualStudioCode.gitignore ---
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+!.vscode/*.code-snippets
+!*.code-workspace
+*.vsix
