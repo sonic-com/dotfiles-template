@@ -1,0 +1,17 @@
+# Example ~/.ssh/config.d/ drop-in.
+#
+# ~/.ssh/config does `Include config.d/*.conf`, so ONLY files ending in `.conf`
+# are read. This file ends in `.sample` on purpose, so it is inert. To use it:
+#
+#     cp ~/.ssh/config.d/example.conf.sample ~/.ssh/config.d/my-hosts.conf
+#     $EDITOR ~/.ssh/config.d/my-hosts.conf
+#
+# Then add host stanzas like:
+
+# Host myserver
+#     HostName myserver.example.com
+#     User me
+#     ForwardAgent yes
+
+# Host jump-*
+#     ProxyJump bastion.example.com

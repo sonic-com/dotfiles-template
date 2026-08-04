@@ -1,0 +1,44 @@
+---
+# Keep a FORK of sonic-com/dotfiles-template up to date with upstream.
+#
+# This runs in YOUR fork (not in the upstream repo) and fast-forwards your
+# default branch from upstream on a schedule. To use it:
+#   1. Fork sonic-com/dotfiles-template and init chezmoi from your fork.
+#   2. In your fork: Settings -> Actions -> General -> allow Actions (forks
+#      have Actions disabled by default).
+#   3. Only if you keep the workflow files themselves in sync: add a repo secret
+#      UPSTREAM_SYNC_TOKEN = a PAT with `workflow` scope. The default GITHUB_TOKEN
+#      cannot push changes under .github/workflows/, so workflow updates would be
+#      skipped without it.
+#
+# Marketplace action: https://github.com/marketplace/actions/upstream-sync
+name: Upstream Sync
+
+on:
+  schedule:
+    - cron: '17 7 * * *'   # daily ~07:17 UTC (off the top-of-hour rush)
+  workflow_dispatch: {}     # allow manual runs
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    name: Sync main from upstream
+    runs-on: ubuntu-latest
+    # Never run in the upstream repo itself — only in forks.
+    if: github.repository != 'sonic-com/dotfiles-template'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
+
+      - name: Sync upstream -> fork
+        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
+        with:
+          target_sync_branch: main
+          target_repo_token: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
+          upstream_sync_branch: main
+          upstream_sync_repo: sonic-com/dotfiles-template
+          upstream_pull_args: --ff-only

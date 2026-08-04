@@ -1,0 +1,33 @@
+# ~/.ssh/config — starter config for the Sonic dotfiles template.
+#
+# Managed by chezmoi. Prefer adding host stanzas as drop-ins rather than editing
+# this file, so you can pull template updates without conflicts:
+#   - team-wide, shared by everyone:  edit the dotfiles-ssh repo's config.d/
+#   - just this machine / just you:   ~/.ssh/config.d/*.conf (see the .sample)
+
+# Local, per-machine drop-ins (highest precedence). NOTE: *.conf only, so editor
+# backups / temp files (foo.conf~, .conf.swp, etc.) are never accidentally sourced.
+Include config.d/*.conf
+
+# Team-wide shared snippets pulled from dotfiles-ssh (see .chezmoiexternal.toml).
+Include ~/.local/share/dotfiles-ssh/config.d/*.conf
+
+Host *
+    # Trust SSH host certificates via the shared Sonic CA (from dotfiles-ssh), so
+    # CA-signed hosts verify with no prompt even under StrictHostKeyChecking yes.
+    # ~/.ssh/known_hosts holds your ordinary per-host keys; known_hosts_ca is the
+    # CA (a symlink into ~/.local/share/dotfiles-ssh/).
+    UserKnownHostsFile ~/.ssh/known_hosts ~/.ssh/known_hosts_ca
+
+    # Refuse unknown or changed host keys. Safe now that Sonic hosts present
+    # CA-signed certificates; add any non-CA hosts to known_hosts explicitly.
+    StrictHostKeyChecking yes
+    UpdateHostKeys yes
+
+    AddKeysToAgent yes
+    HashKnownHosts no
+    ConnectTimeout 15
+
+    # Let short names resolve under sonic.net (e.g. `ssh foo` tries foo.sonic.net).
+    CanonicalizeHostname yes
+    CanonicalDomains sonic.net

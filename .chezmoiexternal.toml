@@ -1,0 +1,28 @@
+# Shared Sonic SSH config + known_hosts — single source of truth:
+#   github.com/sonic-com/dotfiles-ssh
+#
+# The whole repo is pulled to ~/.local/share/dotfiles-ssh/, which holds:
+#   - known_hosts_ca         -> symlinked to ~/.ssh/known_hosts_ca
+#   - config.d/*.conf        -> Include'd by ~/.ssh/config (team-wide snippets)
+#
+# Both sources below land the repo at the SAME path, so switching private <->
+# public is a pure comment toggle here — the symlink and ssh config never change.
+
+# --- Private repo (ACTIVE): clone over SSH; requires github.com/sonic-com access ---
+[".local/share/dotfiles-ssh"]
+    type = "git-repo"
+    url = "git@github.com:sonic-com/dotfiles-ssh.git"
+    refreshPeriod = "168h"
+    [".local/share/dotfiles-ssh".pull]
+        args = ["--ff-only"]
+
+# --- Public repo (ALTERNATIVE): download the repo tarball over HTTPS, no auth ---
+# If dotfiles-ssh is ever made public, comment out the git-repo block above and
+# uncomment this. It extracts the whole repo (known_hosts_ca + config.d/) to the
+# same path, so the symlink + ssh config stay unchanged.
+# [".local/share/dotfiles-ssh"]
+#     type = "archive"
+#     url = "https://github.com/sonic-com/dotfiles-ssh/archive/refs/heads/main.tar.gz"
+#     exact = true
+#     stripComponents = 1
+#     refreshPeriod = "168h"

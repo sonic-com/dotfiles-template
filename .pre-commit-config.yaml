@@ -1,0 +1,35 @@
+---
+# Pre-commit hooks are DISABLED by default in this template.
+#
+# Why: active hooks fight chezmoi's normal autoCommit/autoPush workflow (every
+# `chezmoi apply` that changes source state would trigger them) and require
+# `pre-commit install` plus the underlying tools (shellcheck, node, ...) on every
+# clone. So they ship OFF. Enable the ones you want by uncommenting below, then
+# run `pre-commit install`.
+
+repos: []
+
+# repos:
+#   - repo: https://github.com/pre-commit/pre-commit-hooks
+#     rev: v6.0.0
+#     hooks:
+#       - id: check-added-large-files
+#         args: [--maxkb=5000]
+#       - id: check-merge-conflict
+#       - id: end-of-file-fixer
+#       - id: mixed-line-ending
+#         args: [--fix=lf]
+#       - id: trailing-whitespace
+#       - id: check-toml
+#       - id: check-yaml
+#
+#   - repo: https://github.com/igorshubovych/markdownlint-cli
+#     rev: v0.49.1
+#     hooks:
+#       - id: markdownlint-fix
+#
+#   - repo: https://github.com/adrienverge/yamllint.git
+#     rev: v1.29.0
+#     hooks:
+#       - id: yamllint
+#         args: [--strict, '-d', "{rules: {line-length: {max: 120}}}"]
