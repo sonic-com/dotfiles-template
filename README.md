@@ -25,8 +25,8 @@ After forking and `chezmoi apply`, a couple of things need enabling on your fork
 in your chezmoi source:
 
 1. **Enable Actions (for auto-sync).** On your fork: **Settings → Actions → General → Allow all
-   actions** — forks ship with Actions disabled. The `Upstream Sync` workflow then fast-forwards
-   your `main` from `sonic-com/dotfiles-template` daily (and on demand via **Actions → Upstream
+   actions** — forks ship with Actions disabled. The `Upstream Sync` workflow then merges
+   `sonic-com/dotfiles-template` into your `main` daily (and on demand via **Actions → Upstream
    Sync → Run workflow**).
 2. **(Optional) Sync workflow-file changes too.** The default `GITHUB_TOKEN` can't push under
    `.github/workflows/`. If you want updates to the workflow itself to sync, add a repo **secret**
@@ -43,7 +43,7 @@ in your chezmoi source:
 - **Team-wide SSH snippets** — anything in the shared
   [`dotfiles-ssh`](https://github.com/sonic-com/dotfiles-ssh) repo (e.g. agent-forwarding to
   build and monitoring hosts) is `Include`d automatically.
-- **Auto-sync** — a GitHub Action fast-forwards your fork from upstream on a schedule.
+- **Auto-sync** — a GitHub Action merges upstream into your repo on a schedule.
 - **Safer commits** — an always-on `gitleaks` pre-commit hook blocks secrets, and new git repos
   you create inherit a pre-commit setup automatically (via `~/.config/git/template`).
 

@@ -1,17 +1,19 @@
 ---
-# Keep a FORK of sonic-com/dotfiles-template up to date with upstream.
+# Keep your copy of sonic-com/dotfiles-template up to date with upstream.
 #
-# This runs in YOUR fork (not in the upstream repo) and fast-forwards your
-# default branch from upstream on a schedule. To use it:
-#   1. Fork sonic-com/dotfiles-template and init chezmoi from your fork.
-#   2. In your fork: Settings -> Actions -> General -> allow Actions (forks
-#      have Actions disabled by default).
-#   3. Only if you keep the workflow files themselves in sync: add a repo secret
-#      UPSTREAM_SYNC_TOKEN = a PAT with `workflow` scope. The default GITHUB_TOKEN
-#      cannot push changes under .github/workflows/, so workflow updates would be
-#      skipped without it.
+# Works for a GitHub fork AND for a repo made with "Use this template" (which
+# shares no git history with upstream). It MERGES upstream/main into your main
+# rather than fast-forwarding, because your repo has its own commits.
 #
-# Marketplace action: https://github.com/marketplace/actions/upstream-sync
+# Setup in your repo:
+#   1. Settings -> Actions -> General -> allow Actions (forks ship disabled).
+#   2. Optional: add a repo secret UPSTREAM_SYNC_TOKEN = a PAT with `workflow`
+#      scope. The default GITHUB_TOKEN cannot push changes under
+#      .github/workflows/, so a merge that touches this file fails without it.
+#
+# "Use this template" repos: the very first merge conflicts on the files you
+# and upstream both changed (README, CLAUDE.md, ...). Do that one by hand once
+# (the failure message prints the commands); later runs merge cleanly.
 name: Upstream Sync
 
 on:
@@ -22,23 +24,36 @@ on:
 permissions:
   contents: write
 
+env:
+  UPSTREAM: sonic-com/dotfiles-template
+
 jobs:
   sync:
-    name: Sync main from upstream
+    name: Merge upstream/main into main
     runs-on: ubuntu-latest
-    # Never run in the upstream repo itself — only in forks.
+    # Never run in the upstream repo itself.
     if: github.repository != 'sonic-com/dotfiles-template'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0   # full history: merge needs it
           token: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
 
-      - name: Sync upstream -> fork
-        uses: aormsby/Fork-Sync-With-Upstream-action@v3.4.1
-        with:
-          target_sync_branch: main
-          target_repo_token: ${{ secrets.UPSTREAM_SYNC_TOKEN || github.token }}
-          upstream_sync_branch: main
-          upstream_sync_repo: sonic-com/dotfiles-template
-          upstream_pull_args: --ff-only
+      - name: Merge upstream
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git remote add upstream "https://github.com/${UPSTREAM}.git"
+          git fetch upstream main
+          if git merge-base --is-ancestor upstream/main HEAD; then
+            echo 'Already up to date with upstream.'
+            exit 0
+          fi
+          if ! git merge --no-edit --allow-unrelated-histories upstream/main; then
+            echo "::error::Merge conflict with upstream. Resolve locally, then push:"
+            echo "  git remote add upstream https://github.com/${UPSTREAM}.git"
+            echo "  git fetch upstream && git merge --allow-unrelated-histories upstream/main"
+            exit 1
+          fi
+          git push origin HEAD:main

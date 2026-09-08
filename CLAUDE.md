@@ -77,6 +77,9 @@ on by default across the repos you create.
 
 ## Staying in sync with upstream
 
-`.github/workflows/upstream-sync.yml` fast-forwards your fork's `main` from upstream on a schedule
-(and on demand via "Run workflow"), and no-ops in the upstream repo itself. **Per-fork setup steps
+`.github/workflows/upstream-sync.yml` merges upstream `main` into your `main` on a schedule (and on
+demand via "Run workflow"), and no-ops in the upstream repo itself. It merges rather than
+fast-forwards so it works once you have your own commits, and for "Use this template" repos, which
+share no history with upstream; those need one manual first merge (the failed run prints the
+commands). **Per-fork setup steps
 are in the [README](README.md#set-up-your-fork-one-time).**
